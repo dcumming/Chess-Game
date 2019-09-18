@@ -1,7 +1,7 @@
 # Chess-Game
 A fun Java project I wrote that was inspired by a class I took on artificial inteligence. 
 
-The project involves a variety of ideas such as the state design pattern used throughout object-oriented languages, the MVC software design pattern, the alphabeta search algorithm, and `javafx` to create a GUI.
+The project involves a variety of ideas such as the state design pattern used throughout object-oriented programming design, the MVC software design pattern, the alphabeta search algorithm, and `javafx` to create a GUI.
 
 Project Files
 -------------
