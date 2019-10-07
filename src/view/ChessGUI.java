@@ -10,6 +10,7 @@ package view;
 
 /* GUI */
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.Node;
@@ -215,7 +216,7 @@ public class ChessGUI extends Application {
 		/* displays messages regarding state of the game */
 		if (displayGameState()) {
 			/* GAME OVER */
-			System.exit(0);
+			Platform.exit();
 		}
 		
 		/* Resets all the black pieces to have default cursors */
