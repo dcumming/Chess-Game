@@ -101,23 +101,29 @@ public class Chessboard extends GridPane { // Adds to original GridPane GUI
 	 * @param fromY
 	 * @param toX
 	 * @param toY
-	 * @return true only when a pawn has moved to the end of the board, 
-	 * false otherwise
+	 * @return first element of array is true if opponent piece captured, false otherwise
+	 * second element true only when a pawn has moved to the end of the board, false otherwise
 	 */
-	public boolean movePiece(int fromX, int fromY, int toX, int toY) {
+	public boolean[] movePiece(int fromX, int fromY, int toX, int toY) {
 		Piece copy = pieceList[fromX][fromY];
 		Piece opponent = pieceList[toX][toY];
 		pieceList[fromX][fromY] = null;
 		pieceList[toX][toY] = copy;
 		copy.setLocation(toX, toY);
 		
+		boolean capture = false, 
+				// white or black pawn reached end of board if true
+				pawnAtEnd = (copy.getValue() == 1 && toY == 0) || (copy.getValue() == -1 && toY == 7);
+		
 		if (opponent != null) { // opponent piece captured
 			opponent.getImage().setVisible(false);
 			opponent.getImage().setDisable(true);
+			capture = true;
 		}
 		
-		// white or black pawn reached end of board if true
-		return (copy.getValue() == 1 && toY == 0) || (copy.getValue() == -1 && toY == 7);
+		boolean[] results = {capture, pawnAtEnd};
+		
+		return results;
 	}
 	
 	/**
