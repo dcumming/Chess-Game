@@ -178,7 +178,13 @@ public class ChessGUI extends Application {
 		int xFactor = from.getX() - to.getX();
 		int yFactor = from.getY() - to.getY();
 		
-		move(xFactor, yFactor); // moves image on board
+		double xPos = selected.getTranslateX(), yPos = selected.getTranslateY();
+		
+		// Moves display of selected image on board
+		selected.setTranslateX(xPos - (xFactor * BOX_DIM));
+		selected.setTranslateY(yPos - (yFactor * BOX_DIM));
+		
+		humanTurn = !humanTurn; // Switches turn
 		
 		/* Updates the coordinates of the image that just moved */
 		if (grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY())) { // Pawn at the end of the board
@@ -190,30 +196,15 @@ public class ChessGUI extends Application {
 		// give red borders to boxes where the last move took place
 		grid.labelAt(from.getX(), from.getY()).setBorder(RED_BORDER);
 		grid.labelAt(to.getX(), to.getY()).setBorder(RED_BORDER);
-		
-		boolean check = grid.isCheck(humanTurn), 
-				oom = grid.outOfMoves(humanTurn);
 
 		/* displays messages regarding state of the game */
-		if (displayGameState(check, oom)) {
+		if (displayGameState()) {
 			/* GAME OVER */
 			System.exit(0);
 		}
 		
 		/* Resets all the black pieces to have default cursors */
 		restoreCursors();
-	}
-	
-	/**
-	 * Moves display of selected image on board
-	 * @param xFactor
-	 * @param yFactor
-	 */
-	private void move(int xFactor, int yFactor) {
-		double xPos = selected.getTranslateX(), yPos = selected.getTranslateY();
-		selected.setTranslateX(xPos - (xFactor * BOX_DIM));
-		selected.setTranslateY(yPos - (yFactor * BOX_DIM));
-		humanTurn = !humanTurn; // Switches turn
 	}
 
 	/**
@@ -232,11 +223,10 @@ public class ChessGUI extends Application {
 
 	/**
 	* Displays messages regarding the state of the game: check, checkmate, or stalemate
-	* @param check - whether provided color is in check
-	* @param oom - out of moves
 	* @return true if the game is over, false otherwise
 	*/
-	private boolean displayGameState(boolean check, boolean oom) {
+	private boolean displayGameState() {
+		boolean check = grid.isCheck(humanTurn), oom = grid.outOfMoves(humanTurn);
 		if (humanTurn) {
 			if (check && oom) {
 				JOptionPane.showMessageDialog(null, "Checkmate: Black wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
