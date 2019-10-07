@@ -122,10 +122,7 @@ public class ChessGUI extends Application {
 		});
 		node.setOnMouseReleased(e -> {
 			if (!humanTurn) { // Only executes when correct label was clicked
-				/* Performs computer move with smart AI */
-				Pair<ImageView, ArrayList<Coordinate>> pair = grid.dfs(DEPTH); 
-				selected = pair.getKey(); // Update selected piece to move
-				performMove(pair.getValue().get(0), pair.getValue().get(1));  // performs computer move
+				computerMove();
 			}
 		});
 	}
@@ -155,12 +152,18 @@ public class ChessGUI extends Application {
 		});
 		node.setOnMouseReleased(e -> {
 			if (!humanTurn) { // Only executes when correct piece was clicked
-				/* Performs computer move with smart AI */
-				Pair<ImageView, ArrayList<Coordinate>> pair = grid.dfs(DEPTH); 
-				selected = pair.getKey(); // Update selected piece to move
-				performMove(pair.getValue().get(0), pair.getValue().get(1));  // performs computer move
+				computerMove();
 			}
 		});
+	}
+	
+	/**
+	 * Performs computer move with smart AI
+	 */
+	private void computerMove() {
+		Pair<ImageView, ArrayList<Coordinate>> pair = grid.dfs(DEPTH); 
+		selected = pair.getKey(); // Update selected piece to move
+		performMove(pair.getValue().get(0), pair.getValue().get(1));  // performs computer move
 	}
 
 	/**
