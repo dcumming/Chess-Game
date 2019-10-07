@@ -191,14 +191,20 @@ public class ChessGUI extends Application {
 		
 		humanTurn = !humanTurn; // Switches turn
 		
+		Piece opponent = grid.pieceAt(to.getX(), to.getY());
+		if (opponent != null) { // opponent piece captured
+			// remove opponent piece visibility from board
+			opponent.getImage().setVisible(false);
+			opponent.getImage().setDisable(true);
+			turnsWithoutCapture = 0; // reset the number of turns without capture
+		} else {  // no capture took place
+			turnsWithoutCapture++;  // update the number of turns without capture
+		}
+		
 		/* Updates the coordinates of the image that just moved */
-		boolean[] results = grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY());
-		
-		// update the number of turns without capture
-		turnsWithoutCapture = (results[0]) ? 0 : turnsWithoutCapture + 1;
-		
-		// Pawn reached the end of the board
-		if (results[1]) replacePawn(to);
+		if (grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY())) {
+			replacePawn(to); // Pawn reached the end of the board
+		}
 		
 		restoreBorders();  // reset all boxes to not have the red border
 		
