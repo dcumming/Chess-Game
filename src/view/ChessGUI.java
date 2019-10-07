@@ -51,8 +51,8 @@ public class ChessGUI extends Application {
 	private ImageView selected; // The current piece selected
 	
 	// borders for labels to indicate where the last move was made
-	private final Border noBorder = new Border(new BorderStroke(null, null, null, null)),
-						redBorder = new Border(new BorderStroke(Color.RED,
+	private final Border NO_BORDER = new Border(new BorderStroke(null, null, null, null)),
+						RED_BORDER = new Border(new BorderStroke(Color.RED,
 											   BorderStrokeStyle.SOLID, 
 											   CornerRadii.EMPTY, 
 											   new BorderWidths(2.0)));
@@ -191,8 +191,8 @@ public class ChessGUI extends Application {
 		restoreBorders();  // reset all boxes to not have the red border
 		
 		// give red borders to boxes where the last move took place
-		grid.labelAt(from.getX(), from.getY()).setBorder(redBorder);
-		grid.labelAt(to.getX(), to.getY()).setBorder(redBorder);
+		grid.labelAt(from.getX(), from.getY()).setBorder(RED_BORDER);
+		grid.labelAt(to.getX(), to.getY()).setBorder(RED_BORDER);
 		
 		boolean white = currTurn == human ? true : false, 
 				check = grid.isCheck(white), 
@@ -378,7 +378,7 @@ public class ChessGUI extends Application {
 	private void restoreBorders() {
 		for (int x = 0; x < 8; x++) {
 			for (int y = 0; y < 8; y++) {
-				grid.labelAt(x, y).setBorder(noBorder);
+				grid.labelAt(x, y).setBorder(NO_BORDER);
 			}
 		}
 	}
