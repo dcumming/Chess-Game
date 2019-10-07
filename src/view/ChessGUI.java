@@ -17,6 +17,10 @@ import javafx.scene.Cursor;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.image.Image;
@@ -45,6 +49,13 @@ public class ChessGUI extends Application {
 
 	private Image[] images;
 	private ImageView selected; // The current piece selected
+	
+	// borders for labels to indicate where the last move was made
+	private final Border noBorder = new Border(new BorderStroke(null, null, null, null)),
+						redBorder = new Border(new BorderStroke(Color.RED,
+											   BorderStrokeStyle.SOLID, 
+											   CornerRadii.EMPTY, 
+											   new BorderWidths(2.0)));
 
 	private final double HIGHLIGHT = 0.5, // Indicates which box the piece can move to
 						SCENE_DIM = 640.0, BOX_DIM = SCENE_DIM / 8.0; // dimensions of board
@@ -176,6 +187,12 @@ public class ChessGUI extends Application {
 		if (grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY())) { // Pawn at the end of the board
 			replacePawn(to);
 		}
+		
+		restoreBorders();  // reset all boxes to not have the red border
+		
+		// give red borders to boxes where the last move took place
+		grid.labelAt(from.getX(), from.getY()).setBorder(redBorder);
+		grid.labelAt(to.getX(), to.getY()).setBorder(redBorder);
 		
 		boolean white = currTurn == human ? true : false, 
 				check = grid.isCheck(white), 
@@ -351,6 +368,17 @@ public class ChessGUI extends Application {
 				if (piece != null && !piece.isWhite()) {
 					piece.getImage().setCursor(Cursor.DEFAULT);
 				}
+			}
+		}
+	}
+	
+	/**
+	 * Sets all labels to have no border
+	 */
+	private void restoreBorders() {
+		for (int x = 0; x < 8; x++) {
+			for (int y = 0; y < 8; y++) {
+				grid.labelAt(x, y).setBorder(noBorder);
 			}
 		}
 	}
