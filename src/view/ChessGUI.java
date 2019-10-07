@@ -36,16 +36,11 @@ import javafx.util.Pair;
 import model.Chessboard;
 import model.Piece;
 import model.Coordinate;
-import model.Turn;
 
 @SuppressWarnings("restriction")
 public class ChessGUI extends Application {
 
 	private Chessboard grid;
-
-	private Turn human = new HumanTurn(), 
-				 computer = new ComputerTurn(),
-				 currTurn = human; // Keeps track of the state of the game
 
 	private Image[] images;
 	private ImageView selected; // The current piece selected
@@ -63,6 +58,8 @@ public class ChessGUI extends Application {
 	private final int DEPTH = 3,  // How far ahead the computer looks
 					KING_VAL = 200, QUEEN_VAL = 9, ROOK_VAL = 5,   // Worth of each piece
 					BISHOP_VAL = 3, KNIGHT_VAL = 2,  PAWN_VAL = 1;
+	
+	private boolean humanTurn = true;  // keeps track of the state of the game
 	
 	/**
 	 * Creates and displays the chessboard and assigns functionality to
@@ -124,7 +121,7 @@ public class ChessGUI extends Application {
 			}
 		});
 		node.setOnMouseReleased(e -> {
-			if (currTurn == computer) { // Only executes when correct label was clicked
+			if (!humanTurn) { // Only executes when correct label was clicked
 				/* Performs computer move with smart AI */
 				Pair<ImageView, ArrayList<Coordinate>> pair = grid.dfs(DEPTH); 
 				selected = pair.getKey(); // Update selected piece to move
@@ -157,7 +154,7 @@ public class ChessGUI extends Application {
 			}
 		});
 		node.setOnMouseReleased(e -> {
-			if (currTurn == computer) { // Only executes when correct piece was clicked
+			if (!humanTurn) { // Only executes when correct piece was clicked
 				/* Performs computer move with smart AI */
 				Pair<ImageView, ArrayList<Coordinate>> pair = grid.dfs(DEPTH); 
 				selected = pair.getKey(); // Update selected piece to move
@@ -181,7 +178,7 @@ public class ChessGUI extends Application {
 		int xFactor = from.getX() - to.getX();
 		int yFactor = from.getY() - to.getY();
 		
-		currTurn.move(xFactor, yFactor); // moves image on board
+		move(xFactor, yFactor); // moves image on board
 		
 		/* Updates the coordinates of the image that just moved */
 		if (grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY())) { // Pawn at the end of the board
@@ -194,18 +191,29 @@ public class ChessGUI extends Application {
 		grid.labelAt(from.getX(), from.getY()).setBorder(RED_BORDER);
 		grid.labelAt(to.getX(), to.getY()).setBorder(RED_BORDER);
 		
-		boolean white = currTurn == human ? true : false, 
-				check = grid.isCheck(white), 
-				oom = grid.outOfMoves(white);
+		boolean check = grid.isCheck(humanTurn), 
+				oom = grid.outOfMoves(humanTurn);
 
 		/* displays messages regarding state of the game */
-		if (displayGameState(white, check, oom)) {
+		if (displayGameState(check, oom)) {
 			/* GAME OVER */
 			System.exit(0);
 		}
 		
 		/* Resets all the black pieces to have default cursors */
 		restoreCursors();
+	}
+	
+	/**
+	 * Moves display of selected image on board
+	 * @param xFactor
+	 * @param yFactor
+	 */
+	private void move(int xFactor, int yFactor) {
+		double xPos = selected.getTranslateX(), yPos = selected.getTranslateY();
+		selected.setTranslateX(xPos - (xFactor * BOX_DIM));
+		selected.setTranslateY(yPos - (yFactor * BOX_DIM));
+		humanTurn = !humanTurn; // Switches turn
 	}
 
 	/**
@@ -224,13 +232,12 @@ public class ChessGUI extends Application {
 
 	/**
 	* Displays messages regarding the state of the game: check, checkmate, or stalemate
-	* @param white - team color
 	* @param check - whether provided color is in check
 	* @param oom - out of moves
 	* @return true if the game is over, false otherwise
 	*/
-	private boolean displayGameState(boolean white, boolean check, boolean oom) {
-		if (white) {
+	private boolean displayGameState(boolean check, boolean oom) {
+		if (humanTurn) {
 			if (check && oom) {
 				JOptionPane.showMessageDialog(null, "Checkmate: Black wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
 				return true;
@@ -397,27 +404,6 @@ public class ChessGUI extends Application {
 			if (piece != null && !piece.isWhite()) { piece.getImage().setCursor(Cursor.HAND); }
 		}
 	}
-	
-	
-	/* Private inner classes */
-	private class HumanTurn implements Turn {
-		public void move(int xFactor, int yFactor) {
-			double xPos = selected.getTranslateX(), yPos = selected.getTranslateY();
-			selected.setTranslateX(xPos - (xFactor * BOX_DIM));
-			selected.setTranslateY(yPos - (yFactor * BOX_DIM));
-			currTurn = computer; // Switches turn
-		}
-	}
-	
-	private class ComputerTurn implements Turn {
-		public void move(int xFactor, int yFactor) {
-			double xPos = selected.getTranslateX(), yPos = selected.getTranslateY();
-			selected.setTranslateX(xPos - (xFactor * BOX_DIM));
-			selected.setTranslateY(yPos - (yFactor * BOX_DIM));
-			currTurn = human; // Switches turn
-		}
-	}
-	
 	
 	/**
 	 * Runs the program
