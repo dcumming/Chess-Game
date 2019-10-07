@@ -61,6 +61,8 @@ public class ChessGUI extends Application {
 	
 	private boolean humanTurn = true;  // keeps track of the state of the game
 	
+	private int turnsWithoutCapture = 0; // game ends in stalemate if reaches 50
+	
 	/**
 	 * Creates and displays the chessboard and assigns functionality to
 	 * the images and GUI
@@ -190,9 +192,13 @@ public class ChessGUI extends Application {
 		humanTurn = !humanTurn; // Switches turn
 		
 		/* Updates the coordinates of the image that just moved */
-		if (grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY())) { // Pawn at the end of the board
-			replacePawn(to);
-		}
+		boolean[] results = grid.movePiece(from.getX(), from.getY(), to.getX(), to.getY());
+		
+		// update the number of turns without capture
+		turnsWithoutCapture = (results[0]) ? 0 : turnsWithoutCapture + 1;
+		
+		// Pawn reached the end of the board
+		if (results[1]) replacePawn(to);
 		
 		restoreBorders();  // reset all boxes to not have the red border
 		
@@ -229,7 +235,13 @@ public class ChessGUI extends Application {
 	* @return true if the game is over, false otherwise
 	*/
 	private boolean displayGameState() {
+		if (turnsWithoutCapture == 50) {
+			JOptionPane.showMessageDialog(null, "Stalemate: It's a draw!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
+			return true;
+		}
+		
 		boolean check = grid.isCheck(humanTurn), oom = grid.outOfMoves(humanTurn);
+		
 		if (humanTurn) {
 			if (check && oom) {
 				JOptionPane.showMessageDialog(null, "Checkmate: Black wins!", "Game Over", JOptionPane.INFORMATION_MESSAGE);
